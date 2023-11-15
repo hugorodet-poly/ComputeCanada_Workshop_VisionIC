@@ -93,8 +93,10 @@ There are again several options to transfer files to and from the clusters.
 
 You can use the `scp` command to transfer files between your local machine and a cluster. It works just like the `cp` command, except you have to specify the source and destination machines. To copy a file from your local machine to the Cedar cluster, you can open a terminal and type :
 ```bash
-scp <path to file> <username>@cedar.computecanada.ca:<path to destination>
+scp <path to file> <username>@<remote adress>:<path to destination>
 ```
+
+On some clusters like Graham, you should connect to a data transfer node, which is different from the base login adress you would use normally. Instead of `graham.computecanada.ca`, you must use `gra-dtn1.computecanada.ca`. On Cedar there is no such difference.
 
 For example, if I want to send a compressed dataset to my project space, I can go to the folder where my `dataset.tar.gz` file is held, right-click somewhere empty, choose "Open in terminal" and type :
 ```bash
@@ -107,4 +109,9 @@ Globus is a service provider for data management, geared towards research. It al
 
 However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
+> ### test
 
+
+## 4. Interactive Session
+
+Now we can start ! We'll kick it off 
