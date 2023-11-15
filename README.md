@@ -52,6 +52,10 @@ This is the most comfortable way to work on a cluster. Other IDEs should have si
 I will not go into the details here. I've already explained the setup in my guide, available [here on the lab's Teams](https://polymtlca0.sharepoint.com/:b:/s/LamasStudents/ERAdp299ZEROpNn_zzF-7S4B6xghvEvX_c1yoxqzsT9Nvw?e=1Clw4S).
 
 
+> ##### Practice time :
+> Connect to the Cedar cluster using the method of your choice ! Then, clone this repository on your home directory.
+
+
 ## 3. Transferring data
 
 ### File storage
@@ -109,9 +113,57 @@ Globus is a service provider for data management, geared towards research. It al
 
 However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
-> ### test
+> ##### Practice time :
+> Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing). Don't worry it's only 22MB. It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
 
 
-## 4. Interactive Session
+## 4. `.bashrc` file
 
-Now we can start ! We'll kick it off 
+One last setup before we start. If you've ever really worked on a Linux machine, then surely you know about the `.bashrc` file. It is a file that is executed every time you open a terminal. It is used to set up your environment, for example by adding aliases or setting environment variables. You can also use it to set up your environment on the CC clusters.
+
+The `.bashrc` file is located in your home directory, and is hidden by default. To edit it, you can use the `nano` command. For example, to edit the `.bashrc` file on Cedar, you can type :
+```bash
+nano ~/.bashrc
+```
+
+You can then add the following lines to the file :
+```bash
+export SLURM_ACCOUNT=def-lseoud
+export SBATCH_ACCOUNT=$SLURM_ACCOUNT
+export SALLOC_ACCOUNT=$SLURM_ACCOUNT
+```
+This tells SLURM that every time you subit a job, you do so under the lab's resource allocation.
+
+Don't hesitate to define as many aliases and evironment variables as you want/need.
+
+
+## Python Setup
+
+Before we try to run any code, we'll need to create a Python virtual environment, preferably in your home directory.
+By default, Python is not "installed" (i.e. loaded; remember that several versions are installed but to gain access to them you have to load the corresponding module). You can check this by typing `python` in a terminal. You should get an error message saying that the command is not found. To load Python, you can type :
+```bash
+module load python/3.10.2
+```
+It could as well have been another version. With Python loaded, you also gain access to the `virtualenv` package.
+You can create a virtual environment named `py310.venv` by typing :
+```bash
+virtualenv py310.venv
+```
+
+You can then install the packages used in this tutorial.
+
+> ##### Practice time :
+> Create a Python virtual environment named `py310.venv` and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
+
+
+## 6. Interactive Session
+
+The first thing you should do is start an interactive session. This will allow you to work on the cluster as if it was your own machine, with the added benefit of having access to the cluster's resources. To start an interactive session, you can use the `salloc` command. For example, to start an one-hour interactive session on Cedar with one P100 GPU, 2 CPUs and 4GB RAM, you can type :
+```bash
+salloc --account=def-lseoud --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1
+```
+
+> As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
+
+> ##### Practice time :
+> We'll run a basic Jupyter notebook on the cluster. First, start an interactive session on Cedar with 2 CPUs and 4GB RAM. Then, in the interactive session, start a Jupyter notebook server. You can use the following command :
