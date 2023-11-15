@@ -51,3 +51,60 @@ This is the most comfortable way to work on a cluster. Other IDEs should have si
 
 I will not go into the details here. I've already explained the setup in my guide, available [here on the lab's Teams](https://polymtlca0.sharepoint.com/:b:/s/LamasStudents/ERAdp299ZEROpNn_zzF-7S4B6xghvEvX_c1yoxqzsT9Nvw?e=1Clw4S).
 
+
+## 3. Transferring data
+
+### File storage
+
+There are different storage partitions on CC, each with its own purpose. They are mostly identical across clusters, too.
+To check storage, you can use the CC-specific command `diskusage_report`.`
+As a reminder from the presentation, here is a quick breakdown of the different directories :
+
+| Designation | Full path                       | Usage                                                                  | Description                                                                                                                                                                                                                       |
+|-------------|---------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| home        | /home/<username>                | Source code, Python venv, App image                                    | Main directory, meant for storing                                                                                                                                                                                                 |
+| projects     | ~/projects/def-lseoud/<username> | Datasets (compressed if possible), job scripts                         | 10TB storage space for the entire lab. To share a file, save it in the `group_writable` directory. Relatively fast filesystem.                                                                                                    |
+| nearline    | ~/nearline                      | Inactive data.                                                         | Tape-based storage for archiving unused data. Only for files ranging from 100MB to ~1TB. Do not often write data to this directory.                                                                                               |
+| scratch     | ~/scratch                       | Temporary storage, e.g. checkpoints or large datasets during training. | Temporary storage, files older than 60 days are purged (after reminder email). Useful to extract large datasets during job execution as it is a fast filesystem. Do not try to abuse by artificially modifying the age of a file. |
+|             |                                 |                                                                        |                                                                                                                                                                                                                                   |
+
+### Compressing files
+
+Before you transfer anything, you should compress your files. This will save you a lot of bandwidth, and is a good practice overall. Even on ComputeCanada, you should keep your datasets compressed and extract them somewhere before executing your code, the reason being that the different storage directories have a limit in terms of capacity but also in terms of number of files. You can use the `tar` command to compress and decompress files. For example, to compress a folder named `dataset` into a file named `dataset.tar.gz`, you can type :
+```bash
+tar -czf my_folder.tar.gz my_folder
+```
+To extract the same compressed dataset, you can type:
+```bash
+tar -xzf my_folder.tar.gz
+```
+
+To remember the arguments for creation and extraction, you can think of the following :
+`-czf` = **c**reate **z**ip **f**ile
+`-xzf` = e**x**tract **z**ip **f**ile
+
+As a side note, you can also use the `zip` command to compress and decompress files. It is however less efficient than `tar` for large datasets.
+
+### Transferring files
+
+There are again several options to transfer files to and from the clusters.
+
+#### Option 1 : Using the terminal
+
+You can use the `scp` command to transfer files between your local machine and a cluster. It works just like the `cp` command, except you have to specify the source and destination machines. To copy a file from your local machine to the Cedar cluster, you can open a terminal and type :
+```bash
+scp <path to file> <username>@cedar.computecanada.ca:<path to destination>
+```
+
+For example, if I want to send a compressed dataset to my project space, I can go to the folder where my `dataset.tar.gz` file is held, right-click somewhere empty, choose "Open in terminal" and type :
+```bash
+scp dataset.tar.gz hurodb@cedar.computecanada.ca:~/projects/def-lseoud/hurodb
+```
+
+#### Option 2 : Using Globus
+
+Globus is a service provider for data management, geared towards research. It allows you to transfer files between different endpoints, including ComputeCanada clusters. It is a very useful tool, especially when you have to transfer large datasets. It is also very easy to use.
+
+However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
+
+
