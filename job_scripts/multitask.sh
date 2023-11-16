@@ -10,6 +10,8 @@
 # on several nodes using srun
 #==============================================================================
 
+echo "Parallel experiment started at $(date)"
+cd ~/ComputeCanada_Workshop_VisionIC
+
 # Run the tasks in parallel using srun
-srun hostname
-srun `hostname && sleep 10 && echo "Done!"`
+srun job_scripts/task.sh
