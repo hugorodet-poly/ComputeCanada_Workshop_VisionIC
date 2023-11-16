@@ -11,4 +11,5 @@
 #==============================================================================
 
 # Run the tasks in parallel using srun
+srun hostname
 srun `hostname && sleep 10 && echo "Done!"`
