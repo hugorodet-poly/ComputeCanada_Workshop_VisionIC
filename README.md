@@ -187,7 +187,7 @@ WIP
 > We'll run a basic Jupyter notebook on the cluster. 
 First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
 >
->When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. 
+>When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. Also, if you had loaded a module or activated a virtual environment, they are deativated now since you are not on the same machine anymore.
 Then, in the interactive session, start the Jupyter notebook from this git repository.
 
 ## 7. `sbatch` allocation and job scripts
@@ -219,9 +219,51 @@ Note that the output files contain the standard output ("stdout") of the job, wh
 
 Just like for `salloc`, you can't run sbatch from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
 
+When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. You can then type `squeue -j <job ID>` to get more information about the job, like the output and error files.
 
 > # PRACTICE TIME :
-> Create an `outputs` folder in your home directory. Submit the simple script `example1.sh`.
+> Create an `outputs` folder in your home directory to store the... well, outputs. Submit the simple script `example1.sh`. Type `sq` to check advancement.
+
+
+## 8. Job arrays
+
+If you want to submit several experiments differing only by some parameters (for instance if you are doing hyperparameter search), there are several ways to go about it. You could write a script that takes arguments and submit it several times, or you could use a job array. The latter is the most efficient way to do it, because it helps SLURM compute the needed resources more efficiently, and is the recommended way.
+
+As a side note, Waeights&Biases also implements a way to deal with hyperparameter search if taht is really what you're after. I won't cover it in this guide because it would need a guide of its own (one day, maybe).
+
+To submit a job array, you have to specify the number of jobs in the array with the `--array` flag/directive. You can then access the array ID with the `$SLURM_ARRAY_TASK_ID` environment variable.
+
+To change parameters between one job to another inside the array, there are once again several ways to go about it. In both cases I am assuming that you hold the config of you experiment in a YAML file. If you're not already something like this (YAML or JSON or another Python file, regardless), you should consider it.
+
+### Option 1 : Multiple job configs
+
+If you have a lot of parameters to change it might be easier to simply use several files. Index them with an integer and call them separately using the `$SLURM_ARRAY_TASK_ID` environment variable.
+
+### Option 2 : One job config, and the `sed` command
+
+`sed` is a *very* powerful tool for Linux users. Amongst numerous other things, it allows you to search and replace in a file. For instance, if my YAML config file has a parameter `seed: N` where N is an integer, I can replace it with the array ID by typing :
+```bash
+sed -i "s/seed: .*/seed: $SLURM_ARRAY_TASK_ID/g" config.yaml
+```
+
+If you'd like to know more about the `sed` command, you can check [this page](https://www.cyberciti.biz/faq/how-to-use-sed-to-find-and-replace-text-in-files-in-linux-unix-shell/).
+
+> # PRACTICE TIME :
+> The scripts `array.sh` and `array_sed.sh` each implement one of those two options. Open them, read them, and submit them as jobs. You can check the outputs in the `outputs` folder you've created previously.
+
+
+## 9. Multiple nodes, multiple tasks, and `srun`
+
+If you'd like to run parallel code on several nodes insted of just doing multi-processing, you can use the `srun` command. If you use it inside a job script, it will the nodes and resources allocated by `sbatch`. If you use it inside an interactive session, it will use the resources allocated by `salloc`. If you use it outside of those, it will allocate the resources on the fly.
+
+When you ask for several nodes, upon allocation you will be transferred to the first of those node (during an interactive session), or the job script will be copied and executed on the first of those nodes (after a batch script submission). You can then use `srun` to execute your code on the other nodes. Even when the code is executed in another node, any terminal output will still be transferred to your current terminal on the first node. 
+
+For instance, if you want to run a script on 4 nodes with 1 CPU and 4GB RAM each, you can type :
+
+
+> # PRACTICE TIME :
+> Read the script `multitasking.sh`, submit it and check the output. Start an interactive session with 4 nodes and 2 tasks per node and run `hostname` in parallel to verify that you have 4 different hosts with exactly 2 tasks each. You can also play arounf with the parallel capbilities.
+
 
 
 
