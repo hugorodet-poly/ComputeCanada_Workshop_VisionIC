@@ -9,7 +9,7 @@ First things first :
 - Add a role at [this adress](https://ccdb.alliancecan.ca/me/add_role). This part actually identifies you as a student under Lama's supervision. You'll then be able to access the clusters through the lab's allocation. Note that this is not instantaneous : Lama has to approve your request first, and the team at CC must then process it. This can take a few days. Note that you will need Lama's ComputeCanada identification code (the CCRI).
 
 
-## 1. Setting up the connection [Optional]
+## 1. SSH Keys [Optional]
 
 Typing your password every time is boring. You could setup an authorized SSH connection by uploading your RSA key to the CC website.
 If you are not already familiar with SSH and RSA keys, you can go check a guide or, alternatively, run the few commands below. Understanding is not needed for this part.
@@ -53,7 +53,7 @@ I will not go into the details here. I've already explained the setup in my guid
 
 
 > # PRACTICE TIME :
-> Connect to the Cedar cluster using the method of your choice ! Then, clone this repository on your home directory.
+> Connect to the Cedar cluster using the method of your choice ! Then, clone [this repository](https://github.com/hugorodet-poly/ComputeCanada_Workshop_VisionIC) to your home directory.
 
 
 ## 3. Transferring data
@@ -84,10 +84,10 @@ tar -xzf my_folder.tar.gz
 ```
 
 To remember the arguments for creation and extraction, you can think of the following :
-`-czf` = **c**reate **z**ip **f**ile
-`-xzf` = e**x**tract **z**ip **f**ile
+- `-czf` = **C**reate **Z**ip **F**ile
+- `-xzf` = e**X**tract **Z**ip **F**ile
 
-As a side note, you can also use the `zip` command to compress and decompress files. It is however less efficient than `tar` for large datasets.
+As a side note, you can also use the `zip` command to compress and decompress files. It is however less efficient than `tar` for large datasets. `zip` collects a bunch of files into one "compressed folder", while `tar` creates *one file* from all of those (called a tarball, hence the "tar" name) and then compresses it. In the `.tar.gz` extension, the `.tar` represents the one aggregated file, and the `.gz` indicates that it has been compressed.
 
 ### Transferring files
 
@@ -114,7 +114,7 @@ Globus is a service provider for data management, geared towards research. It al
 However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
 > # PRACTICE TIME :
-> Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing). Don't worry it's only 22MB. It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
+> Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing) (it's only 22MB). It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
 
 
 ## 4. `.bashrc` file
@@ -134,7 +134,7 @@ export SALLOC_ACCOUNT=$SLURM_ACCOUNT
 ```
 This tells SLURM that every time you subit a job, you do so under the lab's resource allocation.
 
-Don't hesitate to define as many aliases and evironment variables as you want/need.
+Don't hesitate to define as many aliases and evironment variables as you want/need. We'll cover some more of them in latter sections.
 
 
 ## Python Setup
@@ -150,7 +150,7 @@ You can create a virtual environment named `py310.venv` by typing :
 virtualenv py310.venv
 ```
 
-To activate the cirtual environment, type :
+To activate the virtual environment, type :
 ```bash
 source py310.venv/bin/activate
 ```
@@ -168,7 +168,26 @@ The first thing you should do is start an interactive session. This will allow y
 salloc --account=def-lseoud --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1
 ```
 
-> As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
+As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
+
+If you want to run a notebook, first you have to type those four lines into you terminal (on Cedar) :
+```bash
+echo -e '#!/bin/bash\nunset XDG_RUNTIME_DIR\njupyter notebook --ip $(hostname -f) --no-browser' > ~/py310.venv/bin/notebook.sh
+chmod u+x ~/py310.venv/bin/notebook.sh
+
+echo -e '#!/bin/bash\nunset XDG_RUNTIME_DIR\njupyter lab --ip $(hostname -f) --no-browser' > ~/py310.venv/bin/lab.sh
+chmod u+x ~/py310.venv/bin/lab.sh
+```
+They create scripts (`~/py310.venv/bin/notebook.sh` and `~/py310.venv/bin/lab.sh`) that will start Jupyter notebook and Jupyter lab respectively.
+
+WIP
 
 > # PRACTICE TIME :
-> We'll run a basic Jupyter notebook on the cluster. First, start an interactive session on Cedar with 2 CPUs and 4GB RAM. Then, in the interactive session, start a Jupyter notebook server. You can use the following command :
+> We'll run a basic Jupyter notebook on the cluster. 
+First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. 
+Then, in the interactive session, start the Jupyter notebook from this git repository.
+
+## 7. `sbatch` allocation and job scripts
+
+The interactive session is most useful for quick debugging. For development, you are probably (should be) working on your lab computer and only pushing to ComputeCanada when you want to massively train your model.
+
