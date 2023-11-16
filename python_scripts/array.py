@@ -10,3 +10,5 @@ if __name__ == '__main__':
 
     # Print contents
     print("-> ", cfg['text'])
+    if cfg['seed'] is not None:
+        print("-> The seed parameter exists and is defined as : ", cfg['seed'])

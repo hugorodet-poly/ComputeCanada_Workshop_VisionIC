@@ -234,7 +234,9 @@ If you want to submit several experiments differing only by some parameters (for
 
 As a side note, Waeights&Biases also implements a way to deal with hyperparameter search if taht is really what you're after. I won't cover it in this guide because it would need a guide of its own (one day, maybe).
 
-To submit a job array, you have to specify the number of jobs in the array with the `--array` flag/directive. You can then access the array ID with the `$SLURM_ARRAY_TASK_ID` environment variable.
+To submit a job array, you have to specify the number of jobs in the array with the `--array` flag/directive. You can then access the array ID at runtime with the `$SLURM_ARRAY_TASK_ID` environment variable.
+
+If you type `sq`, you'll see what jobs have been allocated resources and which ones are still pending.
 
 To change parameters between one job to another inside the array, there are once again several ways to go about it. In both cases I am assuming that you hold the config of you experiment in a YAML file. If you're not already something like this (YAML or JSON or another Python file, regardless), you should consider it.
 
