@@ -167,6 +167,7 @@ The first thing you should do is start an interactive session. This will allow y
 ```bash
 salloc --account=def-lseoud --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1
 ```
+In order the lessen the load on the filesystem, on Cedar you cannot use this command directly fomr you home directory. Instead, you must `cd` to your project directory first (at `~/projects/def-lseoud/<username>` and execute from there).
 
 As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
 
@@ -184,10 +185,43 @@ WIP
 
 > # PRACTICE TIME :
 > We'll run a basic Jupyter notebook on the cluster. 
-First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. 
+First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
+>
+>When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. 
 Then, in the interactive session, start the Jupyter notebook from this git repository.
 
 ## 7. `sbatch` allocation and job scripts
 
 The interactive session is most useful for quick debugging. For development, you are probably (should be) working on your lab computer and only pushing to ComputeCanada when you want to massively train your model.
+
+Much like `salloc` previously described, you have to specify the necessary resources for your job. Since you have better things to do than write all the arguments every time, you can simply write them at the top of the batch script. SLURM reads it automatically. Thus, your script should look like this :
+```bash
+#!/bin/bash
+#SBATCH --mem=2G
+#SBATCH --time=00:01:00
+```	
+
+As a side note for those unfamiliar with batch scripts, #!/bin/bash is a line present in almost every executabe script indicating to the system that the file should be executed in the terminal using the bash interpreter, giving you access to everything you've defined in the `.bashrc` file. 
+
+The other lines starting with #SBATCH are SLURM directives, telling the system how to run the job. The ones you don't specify get default values.
+
+SLURM directives are actually not only for resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session !
+Some examples :
+```bash
+#SBATCH --job-name=<job name>
+#SBATCH --mail-user=<mail>
+#SBATCH --mail-type=ALL
+#SBATCH --output=/home/<username>/outputs/R-%x-%A-%a-%j.out
+#SBATCH --error=/home/<username>/outputs/R-%x-%A-%a-%j.error
+```
+
+Note that the output files contain the standard output ("stdout") of the job, while the error files contain the standard error ("stderr").
+
+Just like for `salloc`, you can't run sbatch from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
+
+
+> # PRACTICE TIME :
+> Create an `outputs` folder in your home directory. Submit the simple script `example1.sh`.
+
+
 
