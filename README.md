@@ -52,7 +52,7 @@ This is the most comfortable way to work on a cluster. Other IDEs should have si
 I will not go into the details here. I've already explained the setup in my guide, available [here on the lab's Teams](https://polymtlca0.sharepoint.com/:b:/s/LamasStudents/ERAdp299ZEROpNn_zzF-7S4B6xghvEvX_c1yoxqzsT9Nvw?e=1Clw4S).
 
 
-> ##### Practice time :
+> # PRACTICE TIME :
 > Connect to the Cedar cluster using the method of your choice ! Then, clone this repository on your home directory.
 
 
@@ -64,13 +64,13 @@ There are different storage partitions on CC, each with its own purpose. They ar
 To check storage, you can use the CC-specific command `diskusage_report`.`
 As a reminder from the presentation, here is a quick breakdown of the different directories :
 
-| Designation | Full path                       | Usage                                                                  | Description                                                                                                                                                                                                                       |
-|-------------|---------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| home        | /home/<username>                | Source code, Python venv, App image                                    | Main directory, meant for storing                                                                                                                                                                                                 |
-| projects     | ~/projects/def-lseoud/<username> | Datasets (compressed if possible), job scripts                         | 10TB storage space for the entire lab. To share a file, save it in the `group_writable` directory. Relatively fast filesystem.                                                                                                    |
-| nearline    | ~/nearline                      | Inactive data.                                                         | Tape-based storage for archiving unused data. Only for files ranging from 100MB to ~1TB. Do not often write data to this directory.                                                                                               |
-| scratch     | ~/scratch                       | Temporary storage, e.g. checkpoints or large datasets during training. | Temporary storage, files older than 60 days are purged (after reminder email). Useful to extract large datasets during job execution as it is a fast filesystem. Do not try to abuse by artificially modifying the age of a file. |
-|             |                                 |                                                                        |                                                                                                                                                                                                                                   |
+| Designation   | Full path                       | Usage                                                                  | Description                                                                                                                                                                                                                       |
+|---------------|---------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| home          | /home/<username>                | Source code, Python venv, App image                                    | Main directory, meant for storing                                                                                                                                                                                                 |
+| project       | ~/project/def-lseoud/<username> | Datasets (compressed if possible), job scripts                         | 10TB storage space for the entire lab. To share a file, save it in the `group_writable` directory. Relatively fast filesystem.                                                                                                    |
+| nearline      | ~/nearline                      | Inactive data.                                                         | Tape-based storage for archiving unused data. Only for files ranging from 100MB to ~1TB. Do not often write data to this directory.                                                                                               |
+| scratch       | ~/scratch                       | Temporary storage, e.g. checkpoints or large datasets during training. | Temporary storage, files older than 60 days are purged (after reminder email). Useful to extract large datasets during job execution as it is a fast filesystem. Do not try to abuse by artificially modifying the age of a file. |
+| $SLURM_TMPDIR | $SLURM_TMPDIR                   | Fastest dataset storage, during runtime only                           | Temporary storage created for you on-node during job execution. If your dataset is not too large and is composed of many small files, you should copy its tar file to $SLURM_TMPDIR at job start, then extract.                   |
 
 ### Compressing files
 
@@ -113,7 +113,7 @@ Globus is a service provider for data management, geared towards research. It al
 
 However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
-> ##### Practice time :
+> # PRACTICE TIME :
 > Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing). Don't worry it's only 22MB. It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
 
 
@@ -150,10 +150,15 @@ You can create a virtual environment named `py310.venv` by typing :
 virtualenv py310.venv
 ```
 
+To activate the cirtual environment, type :
+```bash
+source py310.venv/bin/activate
+```
+Exit by typing `deactivate`.
 You can then install the packages used in this tutorial.
 
-> ##### Practice time :
-> Create a Python virtual environment named `py310.venv` and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
+> # PRACTICE TIME :
+> Create a Python virtual environment named `py310.venv`, activate it and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
 
 
 ## 6. Interactive Session
@@ -165,5 +170,5 @@ salloc --account=def-lseoud --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu
 
 > As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
 
-> ##### Practice time :
+> # PRACTICE TIME :
 > We'll run a basic Jupyter notebook on the cluster. First, start an interactive session on Cedar with 2 CPUs and 4GB RAM. Then, in the interactive session, start a Jupyter notebook server. You can use the following command :
