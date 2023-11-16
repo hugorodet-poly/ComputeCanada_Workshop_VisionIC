@@ -171,21 +171,12 @@ In order the lessen the load on the filesystem, on Cedar you cannot use this com
 
 As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
 
-If you want to run a notebook, first you have to type those four lines into you terminal (on Cedar) :
-```bash
-echo -e '#!/bin/bash\nunset XDG_RUNTIME_DIR\njupyter notebook --ip $(hostname -f) --no-browser' > ~/py310.venv/bin/notebook.sh
-chmod u+x ~/py310.venv/bin/notebook.sh
+If you want to run a notebook, no. Well, actually, yes, but it's not that easy. If for some reason you absolutely want to use notebooks on ComputeCanada, check [this excellent guide](https://prashp.gitlab.io/post/compute-canada-tut/).
 
-echo -e '#!/bin/bash\nunset XDG_RUNTIME_DIR\njupyter lab --ip $(hostname -f) --no-browser' > ~/py310.venv/bin/lab.sh
-chmod u+x ~/py310.venv/bin/lab.sh
-```
-They create scripts (`~/py310.venv/bin/notebook.sh` and `~/py310.venv/bin/lab.sh`) that will start Jupyter notebook and Jupyter lab respectively.
-
-WIP
+Interactive sessions connect your *terminal* to the remote node. Thus, anything you'll execute using your terminal will run on the remote processing node. This does not apply to VSCode. Remember : VSCode is installed on your local machine and the RemoteSSH extension connects to the login node on Cedar (e.g. cedar1) to work there remotely. If you start an interactive session through a terminal opened with VSCode, only the terminal will be transferred. VSCode will remain connected to the login node.
 
 > # PRACTICE TIME :
-> We'll run a basic Jupyter notebook on the cluster. 
-First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
+> First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
 >
 >When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. Also, if you had loaded a module or activated a virtual environment, they are deativated now since you are not on the same machine anymore.
 Then, in the interactive session, start the Jupyter notebook from this git repository.
@@ -257,7 +248,14 @@ If you'd like to know more about the `sed` command, you can check [this page](ht
 > The scripts `array.sh` and `array_sed.sh` each implement one of those two options. Open them, read them, and submit them as jobs. You can check the outputs in the `outputs` folder you've created previously.
 
 
-## 9. Multiple nodes, multiple tasks, and `srun`
+## 9. Multiple CPUs
+
+On the same node, you might want to use several CPUs, for instance to parallelize data loading using several workers.
+
+
+
+
+## 10. Multiple nodes, multiple tasks, and `srun`
 
 If you'd like to run parallel code on several nodes insted of just doing multi-processing, you can use the `srun` command. If you use it inside a job script, it will the nodes and resources allocated by `sbatch`. If you use it inside an interactive session, it will use the resources allocated by `salloc`. If you use it outside of those, it will allocate the resources on the fly.
 
@@ -280,10 +278,10 @@ As a side note, it is possible to run commands in rapallel on only certain desig
 
 
 > # PRACTICE TIME :
-> Read the script `multitasking.sh`, submit it and check the output. Start an interactive session with 4 nodes and 2 tasks per node and run `hostname` in parallel to verify that you have 4 different hosts with exactly 2 tasks each. You can also play arounf with the parallel capbilities.
+> Read the script `multitasking.sh`, submit it and check the output. You should see that the runs were indeed parallel. Start an interactive session with 4 nodes and 2 tasks per node and run `hostname` in parallel to verify that you have 4 different hosts with exactly 2 tasks each. You can also play arounf with the parallel capbilities.
 
 
-## 10. Multiple GPUs
+## 11. Multiple GPUs
 
-
+Last but not least, you might be interested in learning how to use several GPUs at once ! Of course, they all have to be on the same node. If they weren't, it would be called federated learning and that's someone else's problem.
 
