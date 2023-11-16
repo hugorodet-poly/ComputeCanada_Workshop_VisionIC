@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+from torchvision import datasets
 
 # Define your neural network model
 class Net(nn.Module):
@@ -37,7 +38,7 @@ else:
     print("Training on CPU")
 
 # Load your dataset
-train_dataset = ...
+train_dataset = datasets.MNIST(root='./data', train=True, download=True)
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
 # Training loop

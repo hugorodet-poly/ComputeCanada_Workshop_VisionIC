@@ -52,7 +52,7 @@ This is the most comfortable way to work on a cluster. Other IDEs should have si
 I will not go into the details here. I've already explained the setup in my guide, available [here on the lab's Teams](https://polymtlca0.sharepoint.com/:b:/s/LamasStudents/ERAdp299ZEROpNn_zzF-7S4B6xghvEvX_c1yoxqzsT9Nvw?e=1Clw4S).
 
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : SSH
 > Connect to the Cedar cluster using the method of your choice ! Then, clone [this repository](https://github.com/hugorodet-poly/ComputeCanada_Workshop_VisionIC) to your home directory.
 
 
@@ -113,7 +113,7 @@ Globus is a service provider for data management, geared towards research. It al
 
 However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : DATA TRANSFER
 > Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing) (it's only 22MB). It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
 
 
@@ -157,7 +157,7 @@ source py310.venv/bin/activate
 Exit by typing `deactivate`.
 You can then install the packages used in this tutorial.
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : VIRTUALENV
 > Create a Python virtual environment named `py310.venv`, activate it and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
 
 
@@ -175,7 +175,7 @@ If you want to run a notebook, no. Well, actually, yes, but it's not that easy. 
 
 Interactive sessions connect your *terminal* to the remote node. Thus, anything you'll execute using your terminal will run on the remote processing node. This does not apply to VSCode. Remember : VSCode is installed on your local machine and the RemoteSSH extension connects to the login node on Cedar (e.g. cedar1) to work there remotely. If you start an interactive session through a terminal opened with VSCode, only the terminal will be transferred. VSCode will remain connected to the login node.
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : INTERACTIVE SESSIONS
 > First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
 >
 >When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. Also, if you had loaded a module or activated a virtual environment, they are deativated now since you are not on the same machine anymore.
@@ -215,7 +215,7 @@ Just like for `salloc`, you can't run sbatch from you home directory. Either cop
 
 When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. To cancel a job, you can type `scancel <job ID>`. You can also cancel all pending jobs using `scancel -u $USER -t PENDING`.
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : HELLO WORLD
 > Submit the simple `hello_world.sh` script. You can create an `outputs` folder in your home directory to store the... well, outputs and add the directives above if you want to. Type `sq` to check advancement.
 
 
@@ -244,7 +244,7 @@ sed -i "s/seed: .*/seed: $SLURM_ARRAY_TASK_ID/g" config.yaml
 
 If you'd like to know more about the `sed` command, you can check [this page](https://www.cyberciti.biz/faq/how-to-use-sed-to-find-and-replace-text-in-files-in-linux-unix-shell/).
 
-> # PRACTICE TIME :
+> # PRACTICE TIME : ARRAYS
 > The scripts `array.sh` and `array_sed.sh` each implement one of those two options. Open them, read them, and submit them as jobs. You can check the outputs in the `outputs` folder you've created previously.
 
 
@@ -272,8 +272,8 @@ srun hostname
 As a side note, it is possible to run commands in rapallel on only certain designated nodes, if necessary.
 
 
-> # PRACTICE TIME :
-> Read the script `multitasking.sh`, submit it and check the output. You should see that the runs were indeed parallel. Start an interactive session with 4 nodes, 2 tasks per node and about 10 minutes. Run `hostname` in parallel using `srun` to confirm that you have 4 different hosts with exactly 2 tasks each. You can also play around with the parallel capbilities.
+> # PRACTICE TIME : MULTITASK
+> Read the script `multitasking.sh`, submit it and check the output : you should see that the runs were indeed parallel. Alternatively, you can just start an interactive session with the same resources requirements and run the script `task.sh` "by hand" using `srun`. 
 
 
 ## 11. Multiple GPUs
