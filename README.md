@@ -205,7 +205,10 @@ As a side note for those unfamiliar with batch scripts, #!/bin/bash is a line pr
 
 The other lines starting with #SBATCH are SLURM directives, telling the system how to run the job. The ones you don't specify get default values.
 
-SLURM directives are actually not only for resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session !
+SLURM directives are actually not only for resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. 
+
+Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session ! By default, output and error files end up in the directory from where you submitted the job.
+
 Some examples :
 ```bash
 #SBATCH --job-name=<job name>
@@ -222,7 +225,7 @@ Just like for `salloc`, you can't run sbatch from you home directory. Either cop
 When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. You can then type `squeue -j <job ID>` to get more information about the job, like the output and error files.
 
 > # PRACTICE TIME :
-> Create an `outputs` folder in your home directory to store the... well, outputs. Submit the simple script `example1.sh`. Type `sq` to check advancement.
+> Submit the simple `hello_world.sh` script. You can create an `outputs` folder in your home directory to store the... well, outputs and add the directives above if you want to. Type `sq` to check advancement.
 
 
 ## 8. Job arrays
@@ -258,12 +261,27 @@ If you'd like to run parallel code on several nodes insted of just doing multi-p
 
 When you ask for several nodes, upon allocation you will be transferred to the first of those node (during an interactive session), or the job script will be copied and executed on the first of those nodes (after a batch script submission). You can then use `srun` to execute your code on the other nodes. Even when the code is executed in another node, any terminal output will still be transferred to your current terminal on the first node. 
 
-For instance, if you want to run a script on 4 nodes with 1 CPU and 4GB RAM each, you can type :
+For instance, if you want to run a script on 4 nodes with 1 CPU and 4GB RAM each, the directives are :
+```bash
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+```
+
+And you can display in parallel the host name of every node you're connected to by typing :
+```bash
+srun hostname
+```
+
+As a side note, it is possible to run commands in rapallel on only certain designated nodes, if necessary.
 
 
 > # PRACTICE TIME :
 > Read the script `multitasking.sh`, submit it and check the output. Start an interactive session with 4 nodes and 2 tasks per node and run `hostname` in parallel to verify that you have 4 different hosts with exactly 2 tasks each. You can also play arounf with the parallel capbilities.
 
+
+## 10. Multiple GPUs
 
 
 
