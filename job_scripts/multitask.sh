@@ -10,9 +10,5 @@
 # on several nodes using srun
 #==============================================================================
 
-# Define the number of tasks to run
-num_tasks=4
-
 # Run the tasks in parallel using srun
-# If needed you can specify the number of tasks using -n
-srun -n $num_tasks `hostname && sleep 10 && echo "Done!"`
+srun `hostname && sleep 10 && echo "Done!"`
