@@ -278,6 +278,5 @@ As a side note, it is possible to run commands in rapallel on only certain desig
 
 ## 11. Multiple GPUs
 
-Last but not least, you might be interested in learning how to use several GPUs at once ! Of course, they all have to be on the same node. If they weren't, it would be called federated learning and that's someone else's problem.
 
 This is where we put together a full deep learning pipeline. So far we have conveniently ignored module (and the virtual environment we have created in section 5), because the scripts were very simple and used old libraries that already existed in the Python 3.7.7, which is the default version loaded on Cedar.
