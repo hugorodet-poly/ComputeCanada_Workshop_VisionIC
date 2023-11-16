@@ -9,7 +9,7 @@ if __name__ == '__main__':
     print("Loaded config file: ", file)
 
     # Print contents
-    print("-> ", cfg['text'])
+    print("->", cfg['text'])
     if cfg['seed'] is not None:
         print("-> The seed parameter exists and is defined as : ", cfg['seed'])
     else:

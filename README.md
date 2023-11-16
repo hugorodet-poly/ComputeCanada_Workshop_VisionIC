@@ -207,7 +207,7 @@ The other lines starting with #SBATCH are SLURM directives, telling the system h
 
 SLURM directives are actually not only for resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. 
 
-Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session ! By default, output and error files end up in the directory from where you submitted the job.
+Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session !
 
 Some examples :
 ```bash
@@ -218,7 +218,7 @@ Some examples :
 #SBATCH --error=/home/<username>/outputs/R-%x-%A-%a-%j.error
 ```
 
-Note that the output files contain the standard output ("stdout") of the job, while the error files contain the standard error ("stderr").
+Note that the output files contain the standard output ("stdout") of the job, while the error files contain the standard error ("stderr"). By default, they are not separated and the single file ends up in the directory from where you submitted the job.
 
 Just like for `salloc`, you can't run sbatch from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
 
