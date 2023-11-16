@@ -213,7 +213,7 @@ Note that the output files contain the standard output ("stdout") of the job, wh
 
 Just like for `salloc`, you can't run sbatch from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
 
-When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. You can then type `squeue -j <job ID>` to get more information about the job, like the output and error files.
+When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. To cancel a job, you can type `scancel <job ID>`. You can also cancel all pending jobs using `scancel -u $USER -t PENDING`.
 
 > # PRACTICE TIME :
 > Submit the simple `hello_world.sh` script. You can create an `outputs` folder in your home directory to store the... well, outputs and add the directives above if you want to. Type `sq` to check advancement.
@@ -250,9 +250,10 @@ If you'd like to know more about the `sed` command, you can check [this page](ht
 
 ## 9. Multiple CPUs
 
-On the same node, you might want to use several CPUs, for instance to parallelize data loading using several workers.
+On the same node, you might want to use several CPUs, for instance to parallelize data loading using several workers. You can ask for several CPUs using the `--cpus-per-task` flag/directive.
 
-
+> # PRACTICE TIME :
+> Start an interactive session with 4 CPUs and 4GB RAM, for about 10 minutes. Read and run the python script `multiprocess.py`. When this is done, you can run the same script but with an interactive session holding only 2 CPUs. You should see that the time elapsed is roughly the same when using 4 processes and 2 processes, since you can't use more cores than allocated.
 
 
 ## 10. Multiple nodes, multiple tasks, and `srun`
@@ -261,13 +262,7 @@ If you'd like to run parallel code on several nodes insted of just doing multi-p
 
 When you ask for several nodes, upon allocation you will be transferred to the first of those node (during an interactive session), or the job script will be copied and executed on the first of those nodes (after a batch script submission). You can then use `srun` to execute your code on the other nodes. Even when the code is executed in another node, any terminal output will still be transferred to your current terminal on the first node. 
 
-For instance, if you want to run a script on 4 nodes with 1 CPU and 4GB RAM each, the directives are :
-```bash
-#SBATCH --nodes=4
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=4G
-```
+You can specify the number of nodes and tasks per node using the `--nodes` and `--ntasks-per-node` flags/directives. Alternatively, you can use the `--ntasks` flag/directive to specify the total number of tasks and let SLURM figure out how many nodes to allocate.
 
 And you can display in parallel the host name of every node you're connected to by typing :
 ```bash
@@ -278,10 +273,9 @@ As a side note, it is possible to run commands in rapallel on only certain desig
 
 
 > # PRACTICE TIME :
-> Read the script `multitasking.sh`, submit it and check the output. You should see that the runs were indeed parallel. Start an interactive session with 4 nodes and 2 tasks per node and run `hostname` in parallel to verify that you have 4 different hosts with exactly 2 tasks each. You can also play arounf with the parallel capbilities.
+> Read the script `multitasking.sh`, submit it and check the output. You should see that the runs were indeed parallel. Start an interactive session with 4 nodes, 2 tasks per node and about 10 minutes. Run `hostname` in parallel using `srun` to confirm that you have 4 different hosts with exactly 2 tasks each. You can also play around with the parallel capbilities.
 
 
 ## 11. Multiple GPUs
 
 Last but not least, you might be interested in learning how to use several GPUs at once ! Of course, they all have to be on the same node. If they weren't, it would be called federated learning and that's someone else's problem.
-

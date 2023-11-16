@@ -5,7 +5,7 @@
 #SBATCH --array=1-3
 
 #==============================================================================
-# This cript demonstrates how to use $SLURM_ARRAY_TASK_ID
+# This script demonstrates how to use $SLURM_ARRAY_TASK_ID
 # To specify different files for each array task
 #==============================================================================
 

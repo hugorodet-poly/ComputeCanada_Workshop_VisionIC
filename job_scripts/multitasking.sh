@@ -3,6 +3,7 @@
 #SBATCH --nodes=2
 #SBATCH --tasks-per-node=2
 #SBATCH --cpus-per-task=1
+#SBATCH --time=00:10:00
 
 #==============================================================================
 # This script demonstrates how to run multiple tasks in parallel

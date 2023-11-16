@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH --mem=2G
 #SBATCH --time=00:01:00
-#SBATCH --job-name=example1
-#SBATCH --output=/home/hurodb/outputs/R-%x-%A-%a-%j.out
-#SBATCH --error=/home/hurodb/outputs/R-%x-%A-%a-%j.error
+#SBATCH --job-name=hello_world
 
 echo "Hello World! Script started at $(date)"
+cd ~/ComputeCanada_Workshop_VisionIC
 
-cd python_scripts
-python hello_world.py
+# A base version of Python (3.7.7) is already loaded so this will work
+python python_scripts/hello_world.py
