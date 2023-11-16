@@ -13,6 +13,6 @@ cd ~/ComputeCanada_Workshop_VisionIC
 
 # Here we have only one config file
 # But we'll modify it using the sed command and the array index
-sed -i "s/seed: .*/seed: $SLURM_ARRAY_TASK_ID/g" configs/config.yaml
+sed -i "s,seed: .*,seed: $SLURM_ARRAY_TASK_ID,g" configs/config.yaml
 
 python python_scripts/array.py configs/config.yml

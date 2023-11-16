@@ -12,3 +12,5 @@ if __name__ == '__main__':
     print("-> ", cfg['text'])
     if cfg['seed'] is not None:
         print("-> The seed parameter exists and is defined as : ", cfg['seed'])
+    else:
+        print("-> The seed parameter does not exist in this config file.")
