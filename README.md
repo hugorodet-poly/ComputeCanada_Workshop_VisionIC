@@ -293,3 +293,8 @@ This is where we put together a full deep learning pipeline. So far we have conv
 
 > # PRACTICE TIME : MULTITASK
 > Read and submit the batch script `multigpu.sh`. Check the ouput : it should indicate running on 4 GPUs.
+
+
+## 12. Fluffed-out example script
+
+`example.sh` is a fluffed-out example script, with all the bells and whistles. It is a script I used for a project, and it is meant to be run on the Cedar cluster. It is a bit more complex than what we've seen so far, but it is a good example of what you can do with SLURM. Also it obviously won't run on your machine, it's just an example.
