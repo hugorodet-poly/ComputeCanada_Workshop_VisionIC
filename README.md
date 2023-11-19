@@ -157,8 +157,18 @@ source py310.venv/bin/activate
 Exit by typing `deactivate`.
 You can then install the packages used in this tutorial.
 
+Some packages exist in local repositories, like PyTorch. They are actually custom version of those packages, optimized for the CC software architecture. You might find them the general online repository, but if possible it is recommended you install the custom versions if available. Some packages might even work only if you installed the custom version.  You can install them using the `pip` command by adding the flag `--no-index`. For example, to install PyTorch, you can type :
+```bash
+pip install --no-index torch torchvision
+```
+
+Some packages already exist in the form of modules, like OpenCV. In that case, it is recommended you activate the module instead of installing the package the usual way. Activate the module *before* loading up a virtual environment. In OpenCV's case, you *should not* install the Python package through `pip`, lest you get an error. You can load the module using the `module load` command. For example, to load OpenCV, you can type :
+```bash
+module load opencv
+```
+
 > # PRACTICE TIME : VIRTUALENV
-> Create a Python virtual environment named `py310.venv`, activate it and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
+> Create a Python virtual environment in your home directory named `workshop.venv`, activate it and install the following packages, either by hand or by using the `requirements.txt` file. The packages are :  `torch==1.13.1`, `torchvision==0.14.1`
 
 
 ## 6. Interactive Session
@@ -273,10 +283,13 @@ As a side note, it is possible to run commands in rapallel on only certain desig
 
 
 > # PRACTICE TIME : MULTITASK
-> Read the script `multitasking.sh`, submit it and check the output : you should see that the runs were indeed parallel. Alternatively, you can just start an interactive session with the same resources requirements and run the script `task.sh` "by hand" using `srun`. 
+> Read and submit the batch script `multitasking.sh`. Check the output : you should see that the runs were running in parallel. Alternatively, you can just start an interactive session with the same resources requirements and run the Python script `task.sh` "by hand" using `srun`. 
 
 
 ## 11. Multiple GPUs
 
 
 This is where we put together a full deep learning pipeline. So far we have conveniently ignored module (and the virtual environment we have created in section 5), because the scripts were very simple and used old libraries that already existed in the Python 3.7.7, which is the default version loaded on Cedar.
+
+> # PRACTICE TIME : MULTITASK
+> Read and submit the batch script `multigpu.sh`. Check the ouput : it should indicate running on 4 GPUs.

@@ -7,8 +7,12 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem=64G
 
-# Load the required modules
-module load cuda cudnn
+# Load the required modules before activating the virtual environment
+module load python/3.9.6 scipy-stack
+
+# Activate the virtual environment
+source ~/workshop.venv/bin/activate
 
 # Run your neural network training script
-python train.py
+cd ~/ComputeCanada_Workshop_VisionIC/python_scripts
+python multigpu.py
