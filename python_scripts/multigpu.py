@@ -23,7 +23,7 @@ class Net(nn.Module):
         return x
 
 # Create an instance of the model
-model = Net()
+model = nn.DataParallel(Net())
 
 # Define the loss function and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -44,6 +44,8 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
 # Training loop
 for epoch in range(10):
+    print('Epoch:', epoch+1)
+    print(torch.cuda.memory_summary(abbreviated=True))
     running_loss = 0.0
     for i, data in enumerate(train_loader):
         inputs, labels = data[0].to(device), data[1].to(device)
