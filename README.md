@@ -39,11 +39,11 @@ Inside a terminal / command prompt, type :
 ```bash
 ssh-keygen -t rsa -b 2048
 ```
-and press enter until it's done. This will create a new RSA key pair in your home directory, in the folder `.ssh`. For the full filepath, check the output of the command you just entered. By default, the key pair is named `id_rsa` and `id_rsa.pub` and it should be located in `C:\Users\<username>/.ssh` on Windows or `~/.ssh` on Linux. The first one is your private key, the second one is your public key. You can now upload your public key to the CC website.
+and press enter until it's done. This will create a new RSA key pair in your home directory, in the folder `.ssh`. For the full filepath, check the output of the command you just entered. By default, the key pair is named `id_rsa` and `id_rsa.pub` and it should be located in `C:\Users\<username>/.ssh` on Windows or `~/.ssh` on Linux. The first one is your private key, the second one is your public key.
 
 Do **NOT** upload your private key anywhere ! Only the `.pub` file !
 
-Now you can copy all the contents of your new file id_rsa.pub and paste them into the "SSH Key" section on the CC website, at [this adress](https://ccdb.alliancecan.ca/ssh_authorized_keys).
+You can now copy the entire contents of your new `id_rsa.pub` file and paste them into the "SSH Key" section on the CC website, at [this adress](https://ccdb.alliancecan.ca/ssh_authorized_keys).
 
 No more password typing !
 
@@ -337,10 +337,26 @@ As a side note, it is possible to run commands in parallel on only certain desig
 ## 11. Multiple GPUs
 
 
-This is where we put together a full deep learning pipeline. So far we have conveniently ignored module (and the virtual environment we have created in section 5), because the scripts were very simple and used old libraries that already existed in the Python 3.7.7, which is the default version loaded on Cedar.
+This is where we put together a full deep learning pipeline. So far we have conveniently ignored loading modules as well as activating the virtual environment (created in section 5), because the scripts were simple and used old libraries that already existed in the Python 3.7.7, which is the default version loaded on Cedar.
 
-> # PRACTICE TIME : MULTITASK
-> Read and submit the batch script `multigpu.sh`. Check the ouput : it should indicate running on 4 GPUs.
+Asking for multiple GPUs is straightforward. You can ask for several GPUs using the `--gres` flag/directive, or `--gpus-per-task`, or similar. For example, to ask for 4 P100 GPUs when using a single node, the directive is written as follows :
+```bash
+#SBATCH --gres=gpu:p100:4
+```
+
+Running code on multiple GPUs is hardly any more difficult. You can use the `torch.nn.DataParallel` module to parallelize your model on several GPUs.
+For instance, your model will be parallelized on multiple GPUs if you add the line :
+```python
+model = nn.DataParallel(model)
+```
+
+As a side note, your model will be replicated on each available GPU, and the batch will be split between them. If you want to split the batch yourself, you can use the `torch.nn.parallel.DistributedDataParallel` module instead. It is a bit more complicated to use, but it allows you to do more things.
+
+You might even want to parallelize training across multiples nodes, and while it is made relatively easy with PyTorch, it falls outside both the scope of this workshop and my personal knowledge on the matter. You can check [this official tutorial](https://pytorch.org/tutorials/intermediate/ddp_series_multinode.html).
+
+
+> # PRACTICE TIME : MULTIGPU
+> Read and submit the batch script `multigpu.sh`. Check the ouput : it should indicate running on 4 GPUs. You can also start an interactive session and type `nvidia-smi` to check the specs of available GPUs.
 
 
 ## 12. Fluffed-out example script
