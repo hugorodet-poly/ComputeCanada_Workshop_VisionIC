@@ -62,9 +62,12 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 for epoch in range(10):
     print('Epoch:', epoch+1)
     for i in range(torch.cuda.device_count()):
-        print(f'Device {i} : {torch.cuda.get_device_name(i)} is allocating {torch.cuda.memory_allocated(i)}')
-        print(f'                                          reserving {torch.cuda.memory_reserved(i)}')
-    print(torch.cuda.memory_summary(abbreviated=True, device=[0,1]))
+        print(f'Device {i} = {torch.cuda.get_device_name(i)} is :')
+        print(f'\t- allocating {torch.cuda.memory_allocated(i)//1024//1024} MB')
+        print(f'\t- reserving {torch.cuda.memory_reserved(i)//1024//1024} MB')
+        print(f'\t- over {torch.cuda.get_device_properties(i).total_memory//1024//1024} MB')
+        
+        print(torch.cuda.memory_summary(abbreviated=True, device=torch.cuda.device(i)))
     running_loss = 0.0
     for i, data in enumerate(train_loader):
         inputs, labels = data[0].to(device), data[1].to(device)
