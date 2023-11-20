@@ -1,6 +1,27 @@
 # The VisionIC's ComputeCanada Workshop
 A hands-on quickstart guide to ComputeCanada (heretoforth abbreviated CC).
 
+# Cheat sheet : some useful SLURM commands
+
+| Command                 | Description                                                                                      |
+|-------------------------|--------------------------------------------------------------------------------------------------|
+| `salloc`                | Starts an interactive session                                                                    |
+| `sbatch <batch script>` | Submits a batch script to run as a job.                                                          |
+| `srun <batch command>`  | Runs a batch command in parallel on all available nodes                                          |
+| `sq`                    | Displays you current (running and pending) jobs with info                                        |
+| `sacct`                 | Displays info about recent jobs                                                                  |
+| `seff <job ID>`         | Displays efficiency statistics like percentage of memory used and CPU use for the specified job. |
+
+# Cheat sheet : some useful module commands
+
+| Command                     | Description                                                                                               |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------|
+| `module purge`              | Unload all supplementary modules. Use flag `--force` to unload even default modules.                      |
+| `module list`               | Lists all loaded modules.                                                                                 |
+| `module load <module name>` | Load specified module. It is possible to specify the version, e.g. `module load python/3.9.6`             |
+| `module spider`             | Displays information about all available modules. Use `module spider <module_name>` to get specific info. |
+
+# The road to glory
 
 ## 0. Preliminary step : Create your account
 
@@ -132,7 +153,19 @@ export SLURM_ACCOUNT=def-lseoud
 export SBATCH_ACCOUNT=$SLURM_ACCOUNT
 export SALLOC_ACCOUNT=$SLURM_ACCOUNT
 ```
-This tells SLURM that every time you subit a job, you do so under the lab's resource allocation.
+This tells SLURM that every time you submit any job, you do so under the lab's resource allocation.
+
+Now, after trying to check outputs a few times (we'll get to that), you will probably grow tired of having to find the exact job number and copy/pasting (or even typing) it to display the contents of the file. In my own `.bashrc`, I have defined two aliases. `olerr` stands for "**o**pen **l**ast **err**or file" and `olout` stands for -you guessed it- "**o**pen **l**ast **out**put file".
+```bash
+alias olerr='cat `ls -Art | grep .error | tail -n 1`'
+alias olout='cat `ls -Art | grep .out | tail -n 1`'
+```
+
+
+Another thing you should add to your `.bashrc` file is the Weights&Biases API key. You'll find it [here in the user settings](https://wandb.ai/settings). You can add it to your `.bashrc` file like so :
+```bash
+export API_KEY=<your API key>
+```
 
 Don't hesitate to define as many aliases and evironment variables as you want/need. We'll cover some more of them in latter sections.
 
@@ -157,8 +190,20 @@ source py310.venv/bin/activate
 Exit by typing `deactivate`.
 You can then install the packages used in this tutorial.
 
+Some packages exist in local repositories, like PyTorch. They are actually custom version of those packages, optimized for the CC software architecture. You might find them the general online repository, but if possible it is recommended you install the custom versions if available. Some packages might even work only if you installed the custom version.  You can install them using the `pip` command by adding the flag `--no-index`. For example, to install PyTorch, you can type :
+```bash
+pip install --no-index torch torchvision
+```
+
+Some packages already exist in the form of modules, like OpenCV. In that case, it is recommended you activate the module instead of installing the package the usual way. Activate the module *before* loading up a virtual environment. In OpenCV's case, you *should not* install the Python package through `pip`, lest you get an error. You can load the module using the `module load` command. For example, to load OpenCV, you can type :
+```bash
+module load opencv
+```
+
+I repeat, do not pip install OpenCV in your virtual environment :)
+
 > # PRACTICE TIME : VIRTUALENV
-> Create a Python virtual environment named `py310.venv`, activate it and install the packages used in this tutorial, either by hand or by using the `requirements.txt` file.
+> Create a Python virtual environment in your home directory named `workshop.venv`, activate it and install the following packages, either by hand or by using the `requirements.txt` file. The packages are :  `torch==1.13.1`, `torchvision==0.14.1`
 
 
 ## 6. Interactive Session
@@ -269,14 +314,29 @@ And you can display in parallel the host name of every node you're connected to 
 srun hostname
 ```
 
-As a side note, it is possible to run commands in rapallel on only certain designated nodes, if necessary.
+Instead of a single-line command like `hostname`, you can also run a batch script (technically, running a script *is* a command). For example, you can run the Python script `task.sh` by simply typing :
+```bash
+srun task.sh
+```
+Beware however that the first line of said script `task.sh` must be `#!/bin/bash` for this to work. Else you'll get an error.
+
+
+As a side note, it is possible to run commands in parallel on only certain designated nodes, if necessary.
 
 
 > # PRACTICE TIME : MULTITASK
-> Read the script `multitasking.sh`, submit it and check the output : you should see that the runs were indeed parallel. Alternatively, you can just start an interactive session with the same resources requirements and run the script `task.sh` "by hand" using `srun`. 
+> Read and submit the batch script `multitasking.sh`. Check the output : you should see that the runs were running in parallel. Alternatively, you can just start an interactive session with the same resources requirements and run the Python script `task.sh` "by hand" using `srun`. 
 
 
 ## 11. Multiple GPUs
 
 
 This is where we put together a full deep learning pipeline. So far we have conveniently ignored module (and the virtual environment we have created in section 5), because the scripts were very simple and used old libraries that already existed in the Python 3.7.7, which is the default version loaded on Cedar.
+
+> # PRACTICE TIME : MULTITASK
+> Read and submit the batch script `multigpu.sh`. Check the ouput : it should indicate running on 4 GPUs.
+
+
+## 12. Fluffed-out example script
+
+`example.sh` is a fluffed-out example script, with all the bells and whistles. It is a script I used for a project, and it is meant to be run on the Cedar cluster. It is a bit more complex than what we've seen so far, but it is a good example of what you can do with SLURM.
