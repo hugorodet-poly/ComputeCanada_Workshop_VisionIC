@@ -95,7 +95,7 @@ As a reminder from the presentation, here is a quick breakdown of the different 
 
 ### Compressing files
 
-Before you transfer anything, you should compress your files. This will save you a lot of bandwidth, and is a good practice overall. Even on ComputeCanada, you should keep your datasets compressed and extract them somewhere before executing your code, the reason being that the different storage directories have a limit in terms of capacity but also in terms of number of files. You can use the `tar` command to compress and decompress files. For example, to compress a folder named `dataset` into a file named `dataset.tar.gz`, you can type :
+Before transferring anything, you should first compress your files. This will save you a lot of bandwidth, and is a good practice overall. Even on ComputeCanada, you should keep your datasets compressed and extract them somewhere before executing your code. The reason is that the different storage directories have a limit in terms of capacity but also in terms of number of files. You can use the `tar` command to compress and decompress files. For example, to compress a folder named `dataset` into a file named `dataset.tar.gz`, you can type :
 ```bash
 tar -czf my_folder.tar.gz my_folder
 ```
@@ -104,11 +104,11 @@ To extract the same compressed dataset, you can type:
 tar -xzf my_folder.tar.gz
 ```
 
-To remember the arguments for creation and extraction, you can think of the following :
+To remember the arguments, you can think of the following :
 - `-czf` = **C**reate **Z**ip **F**ile
 - `-xzf` = e**X**tract **Z**ip **F**ile
 
-As a side note, you can also use the `zip` command to compress and decompress files. It is however less efficient than `tar` for large datasets. `zip` collects a bunch of files into one "compressed folder", while `tar` creates *one file* from all of those (called a tarball, hence the "tar" name) and then compresses it. In the `.tar.gz` extension, the `.tar` represents the one aggregated file, and the `.gz` indicates that it has been compressed.
+As a side note, you can also use the `zip` command to compress and decompress files. It is however less efficient than `tar` for large datasets. `zip` only collects a bunch of files into one "compressed folder", while `tar` creates *one file* from all of those (called a tarball, hence the "tar" name) and then compresses it. In the `.tar.gz` extension, the `.tar` represents the one aggregated file, and the `.gz` indicates that it has been compressed with Gzip.
 
 ### Transferring files
 
@@ -118,10 +118,10 @@ There are again several options to transfer files to and from the clusters.
 
 You can use the `scp` command to transfer files between your local machine and a cluster. It works just like the `cp` command, except you have to specify the source and destination machines. To copy a file from your local machine to the Cedar cluster, you can open a terminal and type :
 ```bash
-scp <path to file> <username>@<remote adress>:<path to destination>
+scp <path to source file> <username>@<remote adress>:<path to destination folder>
 ```
 
-On some clusters like Graham, you should connect to a data transfer node, which is different from the base login adress you would use normally. Instead of `graham.computecanada.ca`, you must use `gra-dtn1.computecanada.ca`. On Cedar there is no such difference.
+On some clusters like Graham, you should connect to a data transfer node, which is different from the base login adress you would use normally. Instead of `graham.computecanada.ca`, you must use `gra-dtn1.computecanada.ca`. On Cedar there is no such login/transfer difference, as far as I know.
 
 For example, if I want to send a compressed dataset to my project space, I can go to the folder where my `dataset.tar.gz` file is held, right-click somewhere empty, choose "Open in terminal" and type :
 ```bash
@@ -132,17 +132,17 @@ scp dataset.tar.gz hurodb@cedar.computecanada.ca:~/projects/def-lseoud/hurodb
 
 Globus is a service provider for data management, geared towards research. It allows you to transfer files between different endpoints, including ComputeCanada clusters. It is a very useful tool, especially when you have to transfer large datasets. It is also very easy to use.
 
-However, I don't like signing in to three different platforms and learning a new tool when I can do what I need to with one measly command line. As such I don't really know how to use Globus, I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
+However, I don't like signing in to three different platforms and learning a new tool when I can achieve the same result with one simple command line. As such, I don't really know how to use Globus : I have confirmed that it works but I've gone no further. I'll let you figure it out on your own. [Here's the link to the Globus website](https://www.globus.org/).
 
 > # PRACTICE TIME : DATA TRANSFER
-> Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing) (it's only 22MB). It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`.
+> Download the MNIST dataset on your local machine from [this adress](https://drive.google.com/file/d/1MdnPwwPhGRxHV0d2N-lT1Q6041loSyAI/view?usp=sharing) (it's only 22MB). It's also a zip file, not a tar file, so to get used to `tar` I'd advise you first extract the contents using the method of your choice. Then, connect to CC through a terminal and transfer the tar file to your project space on Cedar using `scp`. We won't use this dataset for the rest of the workshop, but it's a good practice nonetheless.
 
 
 ## 4. `.bashrc` file
 
-One last setup before we start. If you've ever really worked on a Linux machine, then surely you know about the `.bashrc` file. It is a file that is executed every time you open a terminal. It is used to set up your environment, for example by adding aliases or setting environment variables. You can also use it to set up your environment on the CC clusters.
+Another thing to setup before we start. If you've ever really worked on a Linux machine, then surely you know about the `.bashrc` file. It is a file that is executed every time you open a terminal. It is used to set up your environment, for example by adding aliases or defining environment variables. It works the same way on CC clusters.
 
-The `.bashrc` file is located in your home directory, and is hidden by default. To edit it, you can use the `nano` command. For example, to edit the `.bashrc` file on Cedar, you can type :
+The `.bashrc` file is located in your home directory, and is hidden by default. To edit it, you can use the `nano` command. For example, to edit the `.bashrc` file on Cedar with `nano`, you can type :
 ```bash
 nano ~/.bashrc
 ```
@@ -155,47 +155,54 @@ export SALLOC_ACCOUNT=$SLURM_ACCOUNT
 ```
 This tells SLURM that every time you submit any job, you do so under the lab's resource allocation.
 
-Now, after trying to check outputs a few times (we'll get to that), you will probably grow tired of having to find the exact job number and copy/pasting (or even typing) it to display the contents of the file. In my own `.bashrc`, I have defined two aliases. `olerr` stands for "**o**pen **l**ast **err**or file" and `olout` stands for -you guessed it- "**o**pen **l**ast **out**put file".
+Now, after trying to check outputs a few times (we'll get to that later), you will probably grow tired of having to find the exact job number and copy/pasting (or even typing) it to display the contents of the file. In my own `.bashrc`, I have defined two aliases. `olerr` stands for "**o**pen **l**ast **err**or file" and `olout` stands for -you guessed it- "**o**pen **l**ast **out**put file".
 ```bash
 alias olerr='cat `ls -Art | grep .error | tail -n 1`'
 alias olout='cat `ls -Art | grep .out | tail -n 1`'
 ```
 
 
-Another thing you should add to your `.bashrc` file is the Weights&Biases API key. You'll find it [here in the user settings](https://wandb.ai/settings). You can add it to your `.bashrc` file like so :
+Another thing you should add to your `.bashrc` file is the Weights&Biases API key, which allows you to log in and upload your metrics at runtime. You'll find it [here in the user settings](https://wandb.ai/settings). You can add it to your `.bashrc` file like so :
 ```bash
 export API_KEY=<your API key>
 ```
 
-Don't hesitate to define as many aliases and evironment variables as you want/need. We'll cover some more of them in latter sections.
+That's it for the most part, but don't hesitate to define as many aliases and evironment variables as you want/need.
 
 
 ## 5. Python Setup
 
-Before we try to run any code, we'll need to create a Python virtual environment, preferably in your home directory.
-By default, Python is not "installed" (i.e. loaded; remember that several versions are installed but to gain access to them you have to load the corresponding module). You can check this by typing `python` in a terminal. You should get an error message saying that the command is not found. To load Python, you can type :
+Before we try to run any code, we'll need to create a Python virtual environment, preferably in your home directory. As reminder, we need to do this because the processing nodes are literally different computers with distinct systems, and you can't just install the packages on every single one of them. 
+
+
+By default, only some older version of Python is loaded. To load the version you want (e.g. 3.9.6), you can type :
 ```bash
-module load python/3.10.2
+module load python/3.9.6
 ```
 It could as well have been another version. With Python loaded, you also gain access to the `virtualenv` package.
-You can create a virtual environment named `py310.venv` by typing :
+You can create a virtual environment named `workshop.venv` by typing :
 ```bash
-virtualenv py310.venv
+virtualenv workshop.venv
 ```
+As a side note, `virtualenv` is defined on Cedar as an alias to `python -m virtualenv`.
 
 To activate the virtual environment, type :
 ```bash
-source py310.venv/bin/activate
+source workshop.venv/bin/activate
 ```
-Exit by typing `deactivate`.
+You can exit by typing `deactivate`.
 You can then install the packages used in this tutorial.
 
-Some packages exist in local repositories, like PyTorch. They are actually custom version of those packages, optimized for the CC software architecture. You might find them the general online repository, but if possible it is recommended you install the custom versions if available. Some packages might even work only if you installed the custom version.  You can install them using the `pip` command by adding the flag `--no-index`. For example, to install PyTorch, you can type :
+Some packages exist in local repositories, like PyTorch. They are actually custom versions of those packages, optimized for the CC software architecture. While they are available as usual through the PyPI online repository, if possible it is recommended that you install the custom versions whenever possible. Some packages might even work only if you installed the custom version.
+
+Usually, when you install a package through `pip install`, it will first look for the package in the local repository. If it doesn't find it, it will then look for it in the PyPI repository. If you want to make sure to install the custom version, you can force `pip` to only look in the local repository by using the `--no-index` flag.
+
+For example, to install PyTorch, you can type :
 ```bash
 pip install --no-index torch torchvision
 ```
 
-Some packages already exist in the form of modules, like OpenCV. In that case, it is recommended you activate the module instead of installing the package the usual way. Activate the module *before* loading up a virtual environment. In OpenCV's case, you *should not* install the Python package through `pip`, lest you get an error. You can load the module using the `module load` command. For example, to load OpenCV, you can type :
+Additionally, some packages like OpenCValready exist in the form of modules. In that case, it is recommended you activate the module **instead** of installing the package the usual way. Activate the module *before* loading up a virtual environment. In OpenCV's case, you *should not* install the Python package through `pip`, lest you get an error. You can load the module using the `module load` command. For example, to load OpenCV, you can type :
 ```bash
 module load opencv
 ```
@@ -212,38 +219,37 @@ The first thing you should do is start an interactive session. This will allow y
 ```bash
 salloc --account=def-lseoud --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1
 ```
-In order the lessen the load on the filesystem, on Cedar you cannot use this command directly fomr you home directory. Instead, you must `cd` to your project directory first (at `~/projects/def-lseoud/<username>` and execute from there).
+In order the lessen the load on the filesystem, on Cedar you cannot use this command directly from you home directory. Instead, you must `cd` to your project directory first (at `~/projects/def-lseoud/<username>` and execute from there).
 
 As a side note, if you have defined the environment variables in your `.bashrc` file like in section 4, then there is no need to specify the account with the `--account` flag. You could simply type `salloc --time=1:00:00 --mem=4G --cpus-per-task=2 --gres=gpu:p100:1`.
 
 If you want to run a notebook, no. Well, actually, yes, but it's not that easy. If for some reason you absolutely want to use notebooks on ComputeCanada, check [this excellent guide](https://prashp.gitlab.io/post/compute-canada-tut/).
 
-Interactive sessions connect your *terminal* to the remote node. Thus, anything you'll execute using your terminal will run on the remote processing node. This does not apply to VSCode. Remember : VSCode is installed on your local machine and the RemoteSSH extension connects to the login node on Cedar (e.g. cedar1) to work there remotely. If you start an interactive session through a terminal opened with VSCode, only the terminal will be transferred. VSCode will remain connected to the login node.
+Interactive sessions connect your *terminal* to the remote node. Thus, anything you'll execute using your terminal will run on the remote processing node. Note that this does not apply to your entire VSCode session, only to the terminal used to run `salloc`. Remember : VSCode is installed on your local machine and the RemoteSSH extension connects to the login node on Cedar (e.g. cedar1) to work there remotely. If you start an interactive session through a terminal opened with VSCode, only the terminal will be transferred. VSCode will remain connected to the login node.
 
 > # PRACTICE TIME : INTERACTIVE SESSIONS
 > First off, type `hostname` into your terminal on Cedar. It should return something like `cedar#.cedar.computecanada.ca`, your current login node. You can also type `nvidia-smi` to verify that you do not yet have any access to a GPU. Now, start an interactive session on Cedar with 2 CPUs, one P100 GPU and 4GB RAM. 
 >
->When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notive that you have not moved in the direcory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. Also, if you had loaded a module or activated a virtual environment, they are deativated now since you are not on the same machine anymore.
-Then, in the interactive session, start the Jupyter notebook from this git repository.
+>When your allocation goes through, you should be transferred to a distant node through terminal. If you type `pwd`, you'll notice that you have not moved in the directory tree ; make no mistake however : by typing `hostname` again you'll see that you are now connected to the node, and `nvidia-smi` should display the specs of the GPU you asked for. Also, if you had loaded a module or activated a virtual environment, they are now deativated since you are not on the same machine anymore. If you want, you can execute the Pythin script `hello_world.py`.
 
 ## 7. `sbatch` allocation and job scripts
 
 The interactive session is most useful for quick debugging. For development, you are probably (should be) working on your lab computer and only pushing to ComputeCanada when you want to massively train your model.
 
-Much like `salloc` previously described, you have to specify the necessary resources for your job. Since you have better things to do than write all the arguments every time, you can simply write them at the top of the batch script. SLURM reads it automatically. Thus, your script should look like this :
+Contrary to `salloc` which lets you do things freely after allocation, `sbatch` submits a batch script (you know, the `.sh` files)
+
+Much like `salloc` previously described however, you have to specify the necessary resources for your job. Since you have better things to do than type all the arguments every time you `sbatch`, you can instead specify them directly at the top of the batch script. SLURM reads it automatically. Thus, your script should look like this :
 ```bash
 #!/bin/bash
 #SBATCH --mem=2G
 #SBATCH --time=00:01:00
 ```	
 
-As a side note for those unfamiliar with batch scripts, #!/bin/bash is a line present in almost every executabe script indicating to the system that the file should be executed in the terminal using the bash interpreter, giving you access to everything you've defined in the `.bashrc` file. 
+As a side note for those unfamiliar with batch scripts, `#!/bin/bash` is a line present in almost every executable script. It tells the OS that the file should be executed using the bash interpreter (i.e. the usual command prompt), thus giving you access to everything you've defined in the `.bashrc` file. The other lines starting with #SBATCH are called SLURM directives.
 
-The other lines starting with #SBATCH are SLURM directives, telling the system how to run the job. The ones you don't specify get default values.
+SLURM directives actually have other uses than resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. 
 
-SLURM directives are actually not only for resource allocation. You can also specify the name of the job, the output and error files, the email adress to send notifications to, etc. 
-
-Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing their paths, be careful to write the full path starting with `/home/<username>` instead of `~`, because those are executed through SLURM and not through your session !
+Output and error filenames can be specified using placeholders like %x (job name), %A (job ID), %a (array ID) and %j (job allocation ID). When writing the path for the ouput and error files, be careful to write the full path starting with `/home/<username>` instead of `~` : those lines are executed through SLURM and not through your session !
 
 Some examples :
 ```bash
@@ -254,25 +260,25 @@ Some examples :
 #SBATCH --error=/home/<username>/outputs/R-%x-%A-%a-%j.error
 ```
 
-Note that the output files contain the standard output ("stdout") of the job, while the error files contain the standard error ("stderr"). By default, they are not separated and the single file ends up in the directory from where you submitted the job.
+Note that the output files contain the standard output ("stdout") of the job, while the error files contain the standard error ("stderr"). By default, they are not separated and the single `.out` file ends up in the directory you submitted the job from.
 
-Just like for `salloc`, you can't run sbatch from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
+Just like for `salloc`, you can't run `sbatch` from you home directory. Either copy the script files to your project directory (recommended) or `cd` to it first then write the full path, e.g. `sbatch ~/ComputeCanada_Workshop_Visionic/job_scripts/example1.sh`.
 
 When you wait for the job to be allocated / finish, you can type `sq`. It will list some resources specified like CPUs or time left, as well as the job ID and name. To cancel a job, you can type `scancel <job ID>`. You can also cancel all pending jobs using `scancel -u $USER -t PENDING`.
 
 > # PRACTICE TIME : HELLO WORLD
-> Submit the simple `hello_world.sh` script. You can create an `outputs` folder in your home directory to store the... well, outputs and add the directives above if you want to. Type `sq` to check advancement.
+> Submit the simple `hello_world.sh` script. If you are bored, you can create an `outputs` folder in your home directory to store the... well, outputs and add the directives above. You'll have to add them to every script OR export them through your `.bashrc` if you want future outputs to end up here too. Type `sq` to check advancement.
 
 
 ## 8. Job arrays
 
-If you want to submit several experiments differing only by some parameters (for instance if you are doing hyperparameter search), there are several ways to go about it. You could write a script that takes arguments and submit it several times, or you could use a job array. The latter is the most efficient way to do it, because it helps SLURM compute the needed resources more efficiently, and is the recommended way.
+If you want to submit several experiments differing only by some parameters (for instance if you are doing hyperparameter search), there are several ways to go about it. You could write a script that takes arguments and submits it several times, or you could use a job array. The latter is the most efficient way to do it, because it helps SLURM compute the needed resources more efficiently, and is the overall recommended way. We'll cover it in this section.
 
-As a side note, Waeights&Biases also implements a way to deal with hyperparameter search if taht is really what you're after. I won't cover it in this guide because it would need a guide of its own (one day, maybe).
+As a side note, Weights&Biases also implements a way to deal with hyperparameter search if that is really what you're after. I won't cover it in this guide because it would need a guide of its own (one day, maybe), but it's rather efficient.
 
 To submit a job array, you have to specify the number of jobs in the array with the `--array` flag/directive. You can then access the array ID at runtime with the `$SLURM_ARRAY_TASK_ID` environment variable.
 
-If you type `sq`, you'll see what jobs have been allocated resources and which ones are still pending.
+If you type `sq`, you'll see what jobs from the array have been allocated resources and which ones are still pending.
 
 To change parameters between one job to another inside the array, there are once again several ways to go about it. In both cases I am assuming that you hold the config of you experiment in a YAML file. If you're not already something like this (YAML or JSON or another Python file, regardless), you should consider it.
 
@@ -282,7 +288,7 @@ If you have a lot of parameters to change it might be easier to simply use sever
 
 ### Option 2 : One job config, and the `sed` command
 
-`sed` is a *very* powerful tool for Linux users. Amongst numerous other things, it allows you to search and replace in a file. For instance, if my YAML config file has a parameter `seed: N` where N is an integer, I can replace it with the array ID by typing :
+`sed` is a *very* powerful tool for Linux users. Amongst numerous other things, it allows you to search and replace in a file. For instance, if my YAML config file has a parameter `seed: N` where N is any number, I can replace it with the array ID by typing :
 ```bash
 sed -i "s/seed: .*/seed: $SLURM_ARRAY_TASK_ID/g" config.yaml
 ```
@@ -290,7 +296,7 @@ sed -i "s/seed: .*/seed: $SLURM_ARRAY_TASK_ID/g" config.yaml
 If you'd like to know more about the `sed` command, you can check [this page](https://www.cyberciti.biz/faq/how-to-use-sed-to-find-and-replace-text-in-files-in-linux-unix-shell/).
 
 > # PRACTICE TIME : ARRAYS
-> The scripts `array.sh` and `array_sed.sh` each implement one of those two options. Open them, read them, and submit them as jobs. You can check the outputs in the `outputs` folder you've created previously.
+> The scripts `array.sh` and `array_sed.sh` each implement one of those two options. Open them, read them, and submit them as jobs. Check the outputs.
 
 
 ## 9. Multiple CPUs
@@ -303,7 +309,7 @@ On the same node, you might want to use several CPUs, for instance to paralleliz
 
 ## 10. Multiple nodes, multiple tasks, and `srun`
 
-If you'd like to run parallel code on several nodes insted of just doing multi-processing, you can use the `srun` command. If you use it inside a job script, it will the nodes and resources allocated by `sbatch`. If you use it inside an interactive session, it will use the resources allocated by `salloc`. If you use it outside of those, it will allocate the resources on the fly.
+If you'd like to run parallel code on several nodes insted of just doing multi-processing, you can use the `srun` command. If you use it inside a job script, it will use the nodes and resources allocated by `sbatch`. If you use it inside an interactive session, it will use the resources allocated by `salloc`. If you use it outside of those, it will allocate the resources on the fly.
 
 When you ask for several nodes, upon allocation you will be transferred to the first of those node (during an interactive session), or the job script will be copied and executed on the first of those nodes (after a batch script submission). You can then use `srun` to execute your code on the other nodes. Even when the code is executed in another node, any terminal output will still be transferred to your current terminal on the first node. 
 
