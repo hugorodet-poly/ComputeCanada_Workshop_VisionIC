@@ -74,7 +74,7 @@ I will not go into the details here. I've already explained the setup in my guid
 
 
 > # PRACTICE TIME : SSH
-> Connect to the Cedar cluster using the method of your choice ! Then, clone [this repository](https://github.com/hugorodet-poly/ComputeCanada_Workshop_VisionIC) to your home directory.
+> Connect to the Cedar cluster using the method of your choice ! Then, clone [this repository](https://github.com/hugorodet-poly/ComputeCanada_Workshop_VisionIC) to your home directory. If you clone it elsewhere some paths in the provided scripts will have to be updated.
 
 
 ## 3. Transferring data
